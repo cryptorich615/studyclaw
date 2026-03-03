@@ -29,6 +29,14 @@ export async function callOpenClaw(request: OpenClawRequest): Promise<string> {
   // Check if message contains keywords to determine response
   const msgLower = message.toLowerCase();
   
+  // Check for Dixie first (before checking presets)
+  if (systemPrompt.includes('Dixie') || systemPrompt.includes('Head Tutor')) {
+    if (msgLower.includes('who are you') || msgLower.includes('hi') || msgLower.includes('hello')) {
+      return MOCK_RESPONSES.default;
+    }
+    return "I'm Dixie, your head tutor at StudyClaw! I'm here to help you get started with your AI study assistant. Would you like to choose an agent persona?";
+  }
+  
   if (msgLower.includes('who are you') || msgLower.includes('hi') || msgLower.includes('hello')) {
     if (systemPrompt.includes('Chill Vic')) {
       return MOCK_RESPONSES.chill;
