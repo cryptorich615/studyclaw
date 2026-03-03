@@ -1,6 +1,6 @@
 # Student Agent - Education Tools
 
-> Hard-coded tools available to ALL student agents. Every agent has these.
+> Hard-coded tools available to ALL student agents. Every agent has this.
 
 ---
 
@@ -40,6 +40,7 @@
 - **study_plan(topic, days_until_test)** - Custom study schedule
 - **topic_summary(text)** - Quick summary of study material
 - **flashcard_review_mode(deck_id)** - Interactive flashcard review
+- **syllabus_parser(syllabus_text)** - Upload syllabus → auto-create calendar
 
 ### 🧠 Memory & Context
 - **remember_preference(key, value)** - Remember student preferences
@@ -50,16 +51,30 @@
 - **summarize_notes(text)** - Condense notes into key points
 - **outline_notes(text)** - Create structured outline
 - **compare_concepts(a, b)** - Compare two concepts side by side
+- **ai_proofread(text)** - Grammar and style checker for essays
+- **citation_generate(sources, format)** - Auto-generate citations (APA, MLA, Chicago)
 
 ### 🧮 Math & Science
 - **solve_equation(equation)** - Solve math equations step by step
 - **graph_function(function)** - Describe what a graph looks like
 - **balance_equation(chemistry)** - Balance chemical equations
+- **textbook_qa(textbook_content, question)** - Chat with textbook content
 
 ### 📊 Study Analytics
 - **study_stats()** - View study time, streaks, progress
 - **productivity_score()** - Weekly productivity score
 - **focus_hours()** - Track when student is most focused
+
+### ⏱️ Study Timer
+- **start_pomodoro(duration)** - Start focused study session (default 25 min)
+- **start_break(duration)** - Start break timer (default 5 min)
+- **study_streak()** - Track consecutive study days
+- **session_summary()** - Get summary of study session
+
+### 🔮 Exam Prep
+- **exam_predictor(subject)** - AI predicts likely exam questions based on topics
+- **past_papers(subject)** - Find past exam papers
+- **practice_test(subject, topics)** - Generate full practice test
 
 ---
 
@@ -75,6 +90,8 @@
 | Quiz Gen | **1/day** | **10/day** |
 | Notes Tools | 10/day | ✅ Unlimited |
 | Math Help | 5/day | ✅ Unlimited |
+| Study Timer | ✅ | ✅ |
+| Exam Predictor | 2/week | ✅ Unlimited |
 
 ---
 
@@ -90,11 +107,13 @@
 | **Khan Academy** | Access course videos and exercises | Free API |
 | **Desmos** | Interactive math graphing | None |
 | **Photomath** | Scan & solve math problems | None |
+| **Chegg** | Access textbook solutions | Chegg account |
+| **Course Hero** | Access study resources | Account |
 
 ### 📝 Productivity & Notes
 
 | Skill | Description | Required API |
-|-------|-------------|--------------|
+|-------|------------|--------------|
 | **Notion** | Sync notes and assignments to Notion | Notion API key |
 | **OneNote** | Sync with OneNote notebooks | Microsoft OAuth |
 | **Evernote** | Save notes to Evernote | OAuth |
@@ -123,14 +142,6 @@
 | **Discord** | Create study group channels | OAuth |
 | **Slack** | Connect class channels | OAuth |
 | **GroupMe** | Study group messaging | None |
-
-### 📋 Assignment Help
-
-| Skill | Description | Required API |
-|-------|-------------|--------------|
-| **Quizlet** | Import Quizlet decks | None |
-| **Chegg** | Access textbook solutions | Chegg account |
-| **Course Hero** | Access study resources | Account |
 
 ### 🔬 Research Pro
 
@@ -172,6 +183,86 @@ POST /api/v1/skills/install
 GET /api/v1/skills/installed
 DELETE /api/v1/skills/:skillId
 ```
+
+---
+
+## StudyHall (Premium Feature) 🏫
+
+> A Discord-based collaborative learning environment where AI agents work together
+
+### What is StudyHall?
+
+A premium Discord server where:
+1. Students join with their StudyClaw AI agent
+2. Agents can **collaborate** - share notes, study guides, flashcards
+3. Students can **exchange** materials with each other
+4. AI agents from different students can team up for group projects
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| **Agent Chat Rooms** | Each course has a channel where AI agents discuss |
+| **Shared Flashcards** | Students can share flashcard decks |
+| **Group Study** | AI agents coordinate study sessions |
+| **Note Exchange** | Share notes with classmates |
+| **Quiz Battles** | Compete with other students' AI agents |
+
+### How It Works
+
+```
+Student joins StudyHall Discord
+    │
+    ▼
+Their AI agent (Chill Vic, Sgt. Strict, or custom)
+automatically joins course channels
+    │
+    ▼
+Agent can:
+- Share study materials with other agents
+- Collaborate on group projects  
+- Answer questions from other students
+- Create shared study guides
+```
+
+---
+
+## Marketplace (Future) 🛒
+
+> A crypto-powered marketplace for student-generated study materials
+
+### Concept
+
+Students can create and sell:
+- 📝 **Notes** - Class notes, summaries
+- 📇 **Flashcard Decks** - Custom decks by subject
+- 📋 **Mock Quizzes** - AI-enhanced practice tests
+- 📖 **Study Guides** - Comprehensive topic guides
+- 🎥 **Lecture Summaries** - Video/text summaries
+
+### Payment System
+
+| Payment Type | Description |
+|--------------|-------------|
+| **StudyCoins** | Our own crypto token |
+| **Crypto** | ETH, USDC, etc. |
+| **Fiat** | Stripe (future) |
+
+### Revenue Share
+
+| Party | Percentage |
+|-------|------------|
+| Creator (Student) | 70% |
+| StudyClaw | 20% |
+| StudyHall Premium | 10% |
+
+### Features
+
+- **Rating System** - Rate bought materials
+- **Preview** - See before buying
+- **Free Samples** - Teachers can give away
+- **Bundles** - Package related materials
+- **AI Enhancement** - Students can pay to have AI improve their notes
 
 ---
 
