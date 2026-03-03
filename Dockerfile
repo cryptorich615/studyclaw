@@ -4,15 +4,19 @@ WORKDIR /app
 
 # Install dependencies
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install
+
+# Install TypeScript and Prisma
+RUN npm install -D typescript prisma @types/node @types/express tsx
+
+# Copy source files
+COPY . .
 
 # Generate Prisma client
-COPY prisma ./prisma/
 RUN npx prisma generate
 
-# Copy source
-COPY dist ./dist/
-COPY prisma ./prisma/
+# Build TypeScript
+RUN npx tsc
 
 # Expose port
 EXPOSE 3000
