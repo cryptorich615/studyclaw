@@ -62,8 +62,8 @@ export async function callOpenClaw(request: OpenClawRequest): Promise<string> {
     });
 
     if (response.ok) {
-      const data = await response.json();
-      return data.response || data.message || data.text;
+      const data = (await response.json()) as { response?: string; message?: string; text?: string };
+      return data.response || data.message || data.text || "I'm here to help you study!";
     }
   } catch (error) {
     console.error('OpenClaw API error:', error);
