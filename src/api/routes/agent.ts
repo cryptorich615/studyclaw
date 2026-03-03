@@ -5,11 +5,10 @@ import { authenticate, AuthRequest } from '../middleware/auth.js';
 import { createError } from '../middleware/errorHandler.js';
 import { callOpenClaw } from '../../services/openclaw.js';
 import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { join, dirname } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Use process.cwd() + relative paths since we're running in Docker
+const AGENTS_DIR = join(process.cwd(), 'src/agents');
 
 export const agentRouter = Router();
 
@@ -44,11 +43,11 @@ agentRouter.put('/', authenticate, async (req: AuthRequest, res: Response, next:
     const data = updateAgentSchema.parse(req.body);
 
     // If changing preset, update system prompt based on preset
-    let systemPrompt = undefined;
+    let systemPrompt: string | undefined;
     if (data.preset === 'CHILL_VIC') {
-      systemPrompt = readFileSync(join(__dirname, '../../agents/chill-vic/SOUL.md'), 'utf-8');
+      systemPrompt = readFileSync(join(AGENTS_DIR, 'chill-vic/SOUL.md'), 'utf-8');
     } else if (data.preset === 'SGT_STRICT') {
-      systemPrompt = readFileSync(join(__dirname, '../../agents/sgt-strict/SOUL.md'), 'utf-8');
+      systemPrompt = readFileSync(join(AGENTS_DIR, 'sgt-strict/SOUL.md'), 'utf-8');
     }
 
     const agent = await prisma.agent.update({
@@ -83,7 +82,7 @@ agentRouter.post('/chat', authenticate, async (req: AuthRequest, res: Response, 
     }
 
     // Get education tools
-    const tools = readFileSync(join(__dirname, '../../agents/base/EDUCATION_TOOLS.md'), 'utf-8');
+    const tools = readFileSync(join(AGENTS_DIR, 'base/EDUCATION_TOOLS.md'), 'utf-8');
 
     // Build prompt with agent personality and tools
     const systemPrompt = agent.systemPrompt 
@@ -94,12 +93,12 @@ agentRouter.post('/chat', authenticate, async (req: AuthRequest, res: Response, 
     const response = await callOpenClaw({
       message,
       systemPrompt,
-      context: agent.memory as any[],
+      context: agent.memory as Array<{role: string; content: string}>,
     });
 
     // Update memory
     const newMemory = [
-      ...((agent.memory as any[]) || []),
+      ...((agent.memory as Array<{role: string; content: string}>) || []),
       { role: 'user', content: message },
       { role: 'assistant', content: response },
     ].slice(-20); // Keep last 20 messages

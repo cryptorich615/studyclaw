@@ -51,7 +51,7 @@ export async function callOpenClaw(request: OpenClawRequest): Promise<string> {
       throw new Error(`OpenClaw API error: ${response.status}`);
     }
 
-    const data: OpenClawResponse = await response.json();
+    const data = (await response.json()) as OpenClawResponse;
     return data.response;
   } catch (error) {
     console.error('OpenClaw call failed:', error);

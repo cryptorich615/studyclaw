@@ -1,19 +1,18 @@
 import { Router, Response, NextFunction } from 'express';
 import { prisma } from '../../db/client.js';
 import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { join } from 'path';
 import { callOpenClaw } from '../../services/openclaw.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Use process.cwd() for Docker
+const AGENTS_DIR = join(process.cwd(), 'src/agents');
 
 export const dixieRouter = Router();
 
 // Dixie system prompt loaded from file
 const getDixieSystemPrompt = () => {
-  const soul = readFileSync(join(__dirname, '../../agents/dixie/SOUL.md'), 'utf-8');
-  const agents = readFileSync(join(__dirname, '../../agents/dixie/AGENTS.md'), 'utf-8');
+  const soul = readFileSync(join(AGENTS_DIR, 'dixie/SOUL.md'), 'utf-8');
+  const agents = readFileSync(join(AGENTS_DIR, 'dixie/AGENTS.md'), 'utf-8');
   return `${soul}\n\n--- DIRECTIVES ---\n${agents}`;
 };
 
