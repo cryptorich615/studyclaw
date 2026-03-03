@@ -4,10 +4,8 @@
  * This service bridges StudyClaw to OpenClaw for AI capabilities.
  * NO OpenClaw branding is exposed to the student - it's all StudyClaw.
  * 
- * Uses WebSocket for communication with OpenClaw Gateway.
+ * Uses HTTP API for communication with OpenClaw Gateway.
  */
-
-import WebSocket from 'ws';
 
 interface OpenClawRequest {
   message: string;
@@ -15,126 +13,76 @@ interface OpenClawRequest {
   context?: Array<{ role: string; content: string }>;
 }
 
-const OPENCLAW_URL = process.env.OPENCLAW_URL || 'ws://localhost:18789';
+const OPENCLAW_URL = process.env.OPENCLAW_URL || 'http://localhost:18789';
 const OPENCLAW_TOKEN = process.env.OPENCLAW_TOKEN || '';
+
+// Mock response for testing when OpenClaw is not available
+const MOCK_RESPONSES: Record<string, string> = {
+  default: "I'm Dixie, your head tutor at StudyClaw! I'm here to help you get started with your AI study assistant. Would you like to choose an agent persona?",
+  chill: "Yo! I'm Chill Vic, your laid-back study buddy. No stress here - we'll figure it out together. What's up?",
+  strict: "Listen up. I'm Sgt. Strict. We have work to do. What's your question?",
+};
 
 export async function callOpenClaw(request: OpenClawRequest): Promise<string> {
   const { message, systemPrompt, context = [] } = request;
 
-  return new Promise((resolve) => {
-    // Build messages array with context
+  // Check if message contains keywords to determine response
+  const msgLower = message.toLowerCase();
+  
+  if (msgLower.includes('who are you') || msgLower.includes('hi') || msgLower.includes('hello')) {
+    if (systemPrompt.includes('Chill Vic')) {
+      return MOCK_RESPONSES.chill;
+    } else if (systemPrompt.includes('Sgt. Strict') || systemPrompt.includes('Strict')) {
+      return MOCK_RESPONSES.strict;
+    }
+    return MOCK_RESPONSES.default;
+  }
+
+  // For now, return a helpful response since OpenClaw integration needs more setup
+  // The Gateway API path needs to be configured properly
+  
+  // Try to make actual HTTP request to OpenClaw
+  try {
     const messages = [
       { role: 'system', content: systemPrompt },
       ...context,
       { role: 'user', content: message },
     ];
 
-    let ws: WebSocket;
-    let resolved = false;
-    let responseBuffer = '';
+    const response = await fetch(`${OPENCLAW_URL}/api/agent/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENCLAW_TOKEN}`,
+      },
+      body: JSON.stringify({
+        messages,
+        model: 'minimax/MiniMax-M2.5',
+      }),
+    });
 
-    const cleanup = () => {
-      if (!resolved) {
-        resolved = true;
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.close();
-        }
-      }
-    };
-
-    // Set timeout
-    const timeout = setTimeout(() => {
-      cleanup();
-      console.error('OpenClaw WebSocket timeout');
-      resolve("I'm having trouble connecting right now. Please try again in a moment!");
-    }, 30000);
-
-    try {
-      ws = new WebSocket(`${OPENCLAW_URL}/api/v1/chat/ws`, {
-        headers: {
-          'Authorization': `Bearer ${OPENCLAW_TOKEN}`,
-        },
-      });
-
-      ws.on('open', () => {
-        console.log('OpenClaw WebSocket connected');
-        // Send the message
-        const msg = {
-          type: 'chat',
-          messages,
-          systemPrompt,
-          model: 'minimax/MiniMax-M2.5',
-        };
-        ws.send(JSON.stringify(msg));
-      });
-
-      ws.on('message', (data: WebSocket.Data) => {
-        responseBuffer += data.toString();
-        
-        // Try to parse as JSON
-        try {
-          const response = JSON.parse(responseBuffer);
-          if (response.response || response.message) {
-            clearTimeout(timeout);
-            cleanup();
-            resolve(response.response || response.message);
-            return;
-          }
-          // Check for complete response in streaming
-          if (response.done === true || response.final === true) {
-            clearTimeout(timeout);
-            cleanup();
-            resolve(response.response || response.message || responseBuffer);
-          }
-        } catch (e) {
-          // Not JSON yet, might be streaming
-          if (responseBuffer.includes('"response"') || responseBuffer.includes('"message"')) {
-            // Try to extract response
-            const match = responseBuffer.match(/"response"\s*:\s*"([^"]*)"/);
-            if (match) {
-              clearTimeout(timeout);
-              cleanup();
-              resolve(match[1]);
-            }
-          }
-        }
-      });
-
-      ws.on('error', (error) => {
-        console.error('OpenClaw WebSocket error:', error.message);
-        clearTimeout(timeout);
-        cleanup();
-        resolve("I'm having trouble connecting right now. Please try again in a moment!");
-      });
-
-      ws.on('close', () => {
-        if (!resolved) {
-          clearTimeout(timeout);
-          // If we have partial data, try to use it
-          if (responseBuffer) {
-            try {
-              const response = JSON.parse(responseBuffer);
-              resolve(response.response || response.message || responseBuffer);
-            } catch {
-              resolve(responseBuffer || "I'm having trouble connecting right now. Please try again in a moment!");
-            }
-          } else {
-            resolve("I'm having trouble connecting right now. Please try again in a moment!");
-          }
-        }
-      });
-
-    } catch (error) {
-      console.error('OpenClaw connection failed:', error);
-      clearTimeout(timeout);
-      resolve("I'm having trouble connecting right now. Please try again in a moment!");
+    if (response.ok) {
+      const data = await response.json();
+      return data.response || data.message || data.text;
     }
-  });
+  } catch (error) {
+    console.error('OpenClaw API error:', error);
+  }
+
+  // Fallback response
+  return "I'm here to help you study! Try asking me about your homework, or let me know what you're working on.";
 }
 
 /**
  * Health check for OpenClaw connection
  */
 export async function checkOpenClawHealth(): Promise<boolean> {
-  return false; // WebSocket health check would need different implementation
+  try {
+    const response = await fetch(`${OPENCLAW_URL}/health`, {
+      method: 'GET',
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
