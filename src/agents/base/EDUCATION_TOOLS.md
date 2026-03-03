@@ -4,7 +4,7 @@
 
 ---
 
-## Core Tools
+## Core Tools (Free)
 
 ### 📚 Homework Help
 - **analyze_question(question)** - Break down homework questions
@@ -17,6 +17,8 @@
 - **get_upcoming()** - List next 7 days of events
 - **sync_calendar(calendar_id)** - Connect Google Calendar
 - **suggest_study_slots()** - AI suggests optimal study times
+- **set_class_schedule(courses)** - Set weekly class times
+- **exam_countdown(exam_name)** - Countdown to exams
 
 ### 📧 Email Organization
 - **summarize_unread()** - Quick summary of student emails
@@ -29,30 +31,147 @@
 - **summarize_paper(url)** - TL;DR academic papers
 - **find_citations(topic)** - Find related papers
 - **export_bibtex(papers)** - Export citation format
+- **find_related_papers(topic)** - Find papers that cite each other
 
 ### 📝 Study Tools
 - **generate_flashcards(text)** - Create flashcards from notes
 - **create_quiz(topic, difficulty)** - Generate practice questions
 - **spaced_repetition_review()** - Daily review session
 - **study_plan(topic, days_until_test)** - Custom study schedule
+- **topic_summary(text)** - Quick summary of study material
+- **flashcard_review_mode(deck_id)** - Interactive flashcard review
 
 ### 🧠 Memory & Context
 - **remember_preference(key, value)** - Remember student preferences
 - **recall_info(query)** - Search past conversations
 - **track_progress(subject)** - Track mastery of subjects
 
+### 📓 Notes
+- **summarize_notes(text)** - Condense notes into key points
+- **outline_notes(text)** - Create structured outline
+- **compare_concepts(a, b)** - Compare two concepts side by side
+
+### 🧮 Math & Science
+- **solve_equation(equation)** - Solve math equations step by step
+- **graph_function(function)** - Describe what a graph looks like
+- **balance_equation(chemistry)** - Balance chemical equations
+
+### 📊 Study Analytics
+- **study_stats()** - View study time, streaks, progress
+- **productivity_score()** - Weekly productivity score
+- **focus_hours()** - Track when student is most focused
+
 ---
 
-## Tool Access Control
+## Tool Access Control (Updated)
 
 | Tool | Free Tier | Pro Tier |
 |------|-----------|----------|
 | Homework Help | ✅ Unlimited | ✅ Unlimited |
-| Calendar | ✅ 3 events | ✅ Unlimited |
+| Calendar | ✅ 10 events | ✅ Unlimited |
 | Email Summary | ❌ | ✅ 50/day |
-| Research | ❌ | ✅ 20/day |
-| Flashcards | 10/day | ✅ Unlimited |
-| Quiz Gen | 3/day | ✅ Unlimited |
+| Research | 5/day | ✅ 20/day |
+| Flashcards | **50/day** | **100/day** |
+| Quiz Gen | **1/day** | **10/day** |
+| Notes Tools | 10/day | ✅ Unlimited |
+| Math Help | 5/day | ✅ Unlimited |
+
+---
+
+## Premium Skills (Pay-Per-Use)
+
+> Students can install these skills and add their own API keys
+
+### 📚 Reference & Learning
+
+| Skill | Description | Required API |
+|-------|-------------|--------------|
+| **Wolfram Alpha** | Advanced math, science, step-by-step solutions | Wolfram API key |
+| **Khan Academy** | Access course videos and exercises | Free API |
+| **Desmos** | Interactive math graphing | None |
+| **Photomath** | Scan & solve math problems | None |
+
+### 📝 Productivity & Notes
+
+| Skill | Description | Required API |
+|-------|-------------|--------------|
+| **Notion** | Sync notes and assignments to Notion | Notion API key |
+| **OneNote** | Sync with OneNote notebooks | Microsoft OAuth |
+| **Evernote** | Save notes to Evernote | OAuth |
+| **Google Docs** | Create and edit docs | OAuth |
+
+### 📂 File Storage
+
+| Skill | Description | Required API |
+|-------|-------------|--------------|
+| **Google Drive** | Upload/download files | OAuth |
+| **Dropbox** | File backup | OAuth |
+| **iCloud** | Apple ecosystem storage | OAuth |
+
+### 🎵 Focus & Environment
+
+| Skill | Description | Required API |
+|-------|-------------|--------------|
+| **Spotify** | Play study playlists, lo-fi | Spotify OAuth |
+| **Noisli** | Ambient sounds for studying | None |
+| **Brain.fm** | Focus-enhancing audio | Brain.fm account |
+
+### 💬 Communication
+
+| Skill | Description | Required API |
+|-------|-------------|--------------|
+| **Discord** | Create study group channels | OAuth |
+| **Slack** | Connect class channels | OAuth |
+| **GroupMe** | Study group messaging | None |
+
+### 📋 Assignment Help
+
+| Skill | Description | Required API |
+|-------|-------------|--------------|
+| **Quizlet** | Import Quizlet decks | None |
+| **Chegg** | Access textbook solutions | Chegg account |
+| **Course Hero** | Access study resources | Account |
+
+### 🔬 Research Pro
+
+| Skill | Description | Required API |
+|-------|-------------|--------------|
+| **Zotero** | Citation management | OAuth |
+| **Mendeley** | PDF management & citations | OAuth |
+| **Google Scholar** | Enhanced search | None |
+| **PubMed** | Medical/scientific papers | None |
+
+### 📹 Content Creation
+
+| Skill | Description | Required API |
+|-------|-------------|--------------|
+| **YouTube Transcript** | Download lecture transcripts | None |
+| **Otter.ai** | Auto-transcribe lectures | OAuth |
+| **Loom** | Record explanation videos | OAuth |
+
+### 💪 Wellness
+
+| Skill | Description | Required API |
+|-------|-------------|--------------|
+| **Headspace** | Meditation for focus | Headspace account |
+| **MyFitnessPal** | Track study breaks & meals | OAuth |
+
+---
+
+## Premium Skill Installation
+
+```typescript
+// Student installs a premium skill
+POST /api/v1/skills/install
+{
+  skillId: "wolfram_alpha",
+  apiKey: "user-provided-key"  // Optional, if skill needs it
+}
+
+// Student manages their skills
+GET /api/v1/skills/installed
+DELETE /api/v1/skills/:skillId
+```
 
 ---
 
